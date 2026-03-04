@@ -9,12 +9,13 @@ import { getStorage } from 'firebase/storage';
 // ⚠️ Firebase Console > Proje Ayarları > Genel > Web uygulaması değerlerinizi girin
 // Şimdilik Firestore/Storage devre dışı; değerleri girince aktif hale gelir.
 const firebaseConfig = {
-    apiKey: "BURAYA_API_KEY",
-    authDomain: "BURAYA_AUTH_DOMAIN",
-    projectId: "BURAYA_PROJECT_ID",
-    storageBucket: "BURAYA_STORAGE_BUCKET",
-    messagingSenderId: "BURAYA_MESSAGING_ID",
-    appId: "BURAYA_APP_ID"
+    apiKey: "AIzaSyAJ96on_B1ecgtif0UWRSGeSAPYHsP_-48",
+    authDomain: "agropi-dfd49.firebaseapp.com",
+    projectId: "agropi-dfd49",
+    storageBucket: "agropi-dfd49.firebasestorage.app",
+    messagingSenderId: "422933358585",
+    appId: "1:422933358585:web:1be4e949f626c02f593f28",
+    measurementId: "G-HF8G6FLD9P"
 };
 
 // Tekrar başlatma hatasını önle (hot-reload uyumlu)
