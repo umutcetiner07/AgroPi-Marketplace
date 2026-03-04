@@ -16,6 +16,7 @@ import MarketplaceEkrani from '../ekranlar/MarketplaceEkrani';
 import UzmanDetayEkrani from '../ekranlar/UzmanDetayEkrani';
 import IsIlaniEkrani from '../ekranlar/IsIlaniEkrani';
 import IsDetayEkrani from '../ekranlar/IsDetayEkrani';
+import SohbetEkrani from '../ekranlar/SohbetEkrani';
 import ProfilEkrani from '../ekranlar/ProfilEkrani';
 
 import Renkler from '../tema/renkler';
@@ -48,6 +49,7 @@ function AnaTabNavigator() {
                 component={AnaSayfaEkrani}
                 options={{
                     tabBarLabel: 'İş Fırsatları',
+                    tabBarBadge: undefined,   // Gerçek uygulamada: yeniBasvuruSayisi > 0 ? yeniBasvuruSayisi : undefined
                     tabBarIcon: ({ color, size }) => (
                         <Text style={{ fontSize: size - 4, color }}>💼</Text>
                     ),
@@ -114,6 +116,11 @@ function UygulamaYigini() {
             <Stack.Screen
                 name="IsDetay"
                 component={IsDetayEkrani}
+                options={{ animation: 'slide_from_right' }}
+            />
+            <Stack.Screen
+                name="Sohbet"
+                component={SohbetEkrani}
                 options={{ animation: 'slide_from_right' }}
             />
         </Stack.Navigator>

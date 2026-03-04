@@ -384,6 +384,14 @@ const s = StyleSheet.create({
     durumRed: { backgroundColor: 'rgba(239,83,80,0.15)', borderColor: 'rgba(239,83,80,0.35)' },
     durumMetin: { fontSize: 11, fontWeight: '700', color: Renkler.metinIkincil },
 
+    // Mesaj Gönder butonu
+    mesajBtn: {
+        backgroundColor: 'rgba(66,165,245,0.1)', borderRadius: 10, borderWidth: 1,
+        borderColor: 'rgba(66,165,245,0.35)', paddingVertical: 8, alignItems: 'center',
+        marginBottom: 6, marginTop: 4,
+    },
+    mesajBtnMetin: { fontSize: 13, fontWeight: '700', color: '#42A5F5' },
+
     // Hata ekranı
     hataEkrani: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: Renkler.zemin },
     hataMetin: { fontSize: 16, color: Renkler.metinFade, marginBottom: 16 },
