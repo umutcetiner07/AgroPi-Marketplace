@@ -1,238 +1,244 @@
-// AgroPi Marketplace — Ana Marketplace Ekranı (Sarı Sayfalar)
-// Pi ekosistemindeki tarım profesyonellerinin listelendiği keşif ekranı
+// AgroPi Marketplace — Uzman Bul Ekranı (Profesyonel Pazar Yeri)
+// Kalıcı filtre paneli: Kategori + Hizmet Bölgesi (her zaman görünür)
+// Gerçek zamanlı arama: ad + referans proje
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import {
-    View,
-    Text,
-    FlatList,
-    TouchableOpacity,
-    StyleSheet,
-    StatusBar,
-    TextInput,
-    Animated,
-    ScrollView,
+    View, Text, FlatList, TouchableOpacity,
+    StyleSheet, StatusBar, TextInput, Animated, ScrollView,
 } from 'react-native';
 import Renkler from '../tema/renkler';
 import UzmanKarti from '../bilesanler/UzmanKarti';
-import KategoriCipi from '../bilesanler/KategoriCipi';
 
-// Demo uzman verisi — 4 yeni kategori + 4 yeni alan (Firebase Firestore'dan gelecek)
+// ── Demo Veri ───────────────────────────────────────────────────
 const DEMO_UZMANLAR = [
     {
-        id: '1',
-        ad: 'Dr. Ayşe Kaya',
-        kategori: 'Ziraat Mühendisi',
-        kategoriEmoji: '🌾',
-        konum: 'İzmir',
-        puan: 4.9,
-        yorumSayisi: 47,
-        ucret: 2.5,
+        id: '1', ad: 'Dr. Ayşe Kaya',
+        kategori: 'Ziraat Mühendisi', kategoriEmoji: '🌾',
+        konum: 'İzmir', puan: 4.9, yorumSayisi: 47, ucret: 2.5,
         biyografi: 'Toprak analizi ve sulama sistemleri uzmanı. 12 yıl saha deneyimi.',
-        aktif: true,
-        piKullaniciAdi: 'aysekaya_pi',
-        usdUcret: 45,
-        hizmetBolgesi: 'Ege, İç Anadolu',
-        deneyimYili: 12,
-        referansProje: 'Ege Zeytin Tarlaları Sulama Projesi',
+        aktif: true, piKullaniciAdi: 'aysekaya_pi',
+        usdUcret: 45, hizmetBolgesi: 'Ege, İç Anadolu',
+        deneyimYili: 12, referansProje: 'Ege Zeytin Tarlaları Sulama Projesi',
     },
     {
-        id: '2',
-        ad: 'Murat Demir',
-        kategori: 'Topraksız Tarım Uzmanı',
-        kategoriEmoji: '🌱',
-        konum: 'Konya',
-        puan: 4.7,
-        yorumSayisi: 31,
-        ucret: 1.8,
+        id: '2', ad: 'Murat Demir',
+        kategori: 'Topraksız Tarım Uzmanı', kategoriEmoji: '🌱',
+        konum: 'Konya', puan: 4.7, yorumSayisi: 31, ucret: 1.8,
         biyografi: 'Hidroponik ve aeroponik sistemler kurulum ve yönetim uzmanı.',
-        aktif: true,
-        piKullaniciAdi: 'muratdemir_pi',
-        usdUcret: 35,
-        hizmetBolgesi: 'İç Anadolu, Tüm Türkiye (Uzaktan)',
-        deneyimYili: 8,
-        referansProje: 'Konya Büyükşehir Dikey Tarım Tesisi',
+        aktif: true, piKullaniciAdi: 'muratdemir_pi',
+        usdUcret: 35, hizmetBolgesi: 'İç Anadolu, Tüm Türkiye',
+        deneyimYili: 8, referansProje: 'Konya Büyükşehir Dikey Tarım Tesisi',
     },
     {
-        id: '3',
-        ad: 'Fatma Erdoğan',
-        kategori: 'Tarım Teknisyeni',
-        kategoriEmoji: '🔧',
-        konum: 'Muğla',
-        puan: 4.8,
-        yorumSayisi: 22,
-        ucret: 1.2,
+        id: '3', ad: 'Fatma Erdoğan',
+        kategori: 'Tarım Teknisyeni', kategoriEmoji: '🔧',
+        konum: 'Muğla', puan: 4.8, yorumSayisi: 22, ucret: 1.2,
         biyografi: 'Sera ekipmanları kurulumu, bakımı ve arıza tespiti konusunda uzman.',
-        aktif: false,
-        piKullaniciAdi: 'fatmaerdogan_pi',
-        usdUcret: 25,
-        hizmetBolgesi: 'Ege, Akdeniz',
-        deneyimYili: 6,
-        referansProje: 'Muğla Organize Sera Bölgesi Teknik Destek',
+        aktif: false, piKullaniciAdi: 'fatmaerdogan_pi',
+        usdUcret: 25, hizmetBolgesi: 'Ege, Akdeniz',
+        deneyimYili: 6, referansProje: 'Muğla Organize Sera Bölgesi Teknik Destek',
     },
     {
-        id: '4',
-        ad: 'Kemal Yıldız',
-        kategori: 'Üretim Müdürü',
-        kategoriEmoji: '🏭',
-        konum: 'Ankara',
-        puan: 4.6,
-        yorumSayisi: 58,
-        ucret: 3.0,
+        id: '4', ad: 'Kemal Yıldız',
+        kategori: 'Üretim Müdürü', kategoriEmoji: '🏭',
+        konum: 'Ankara', puan: 4.6, yorumSayisi: 58, ucret: 3.0,
         biyografi: 'Büyük ölçekli sera üretim süreçleri planlama ve ekip yönetimi.',
-        aktif: true,
-        piKullaniciAdi: 'kemalyildiz_pi',
-        usdUcret: 60,
-        hizmetBolgesi: 'Tüm Türkiye',
-        deneyimYili: 15,
-        referansProje: 'TARSİM Domates Sera Kompleksi (500 da)',
+        aktif: true, piKullaniciAdi: 'kemalyildiz_pi',
+        usdUcret: 60, hizmetBolgesi: 'Tüm Türkiye',
+        deneyimYili: 15, referansProje: 'TARSİM Domates Sera Kompleksi (500 da)',
     },
     {
-        id: '5',
-        ad: 'Hasan Çelik',
-        kategori: 'Tarım Teknisyeni',
-        kategoriEmoji: '🔧',
-        konum: 'Şanlıurfa',
-        puan: 4.5,
-        yorumSayisi: 18,
-        ucret: 0.8,
+        id: '5', ad: 'Hasan Çelik',
+        kategori: 'Tarım Teknisyeni', kategoriEmoji: '🔧',
+        konum: 'Şanlıurfa', puan: 4.5, yorumSayisi: 18, ucret: 0.8,
         biyografi: 'Damla sulama ve gübreleme sistemleri kurulum ve bakım uzmanı.',
-        aktif: true,
-        piKullaniciAdi: 'hasancelik_pi',
-        usdUcret: 20,
-        hizmetBolgesi: 'Güneydoğu Anadolu (GAP Bölgesi)',
-        deneyimYili: 9,
-        referansProje: 'GAP Sulama Modernizasyon Projesi',
+        aktif: true, piKullaniciAdi: 'hasancelik_pi',
+        usdUcret: 20, hizmetBolgesi: 'Güneydoğu Anadolu',
+        deneyimYili: 9, referansProje: 'GAP Sulama Modernizasyon Projesi',
     },
     {
-        id: '6',
-        ad: 'Selin Aydın',
-        kategori: 'Topraksız Tarım Uzmanı',
-        kategoriEmoji: '🌱',
-        konum: 'Bursa',
-        puan: 4.9,
-        yorumSayisi: 35,
-        ucret: 2.0,
+        id: '6', ad: 'Selin Aydın',
+        kategori: 'Topraksız Tarım Uzmanı', kategoriEmoji: '🌱',
+        konum: 'Bursa', puan: 4.9, yorumSayisi: 35, ucret: 2.0,
         biyografi: 'NFT ve DWC hidroponik sistemlerde marul, fesleğen ve çilek üretimi.',
-        aktif: true,
-        piKullaniciAdi: 'selinaydin_pi',
-        usdUcret: 50,
-        hizmetBolgesi: 'Marmara, Uzaktan Danışmanlık',
-        deneyimYili: 11,
-        referansProje: 'Bursa Sofralık Çilek Hidroponik Çiftliği',
+        aktif: true, piKullaniciAdi: 'selinaydin_pi',
+        usdUcret: 50, hizmetBolgesi: 'Marmara, Tüm Türkiye',
+        deneyimYili: 11, referansProje: 'Bursa Sofralık Çilek Hidroponik Çiftliği',
     },
 ];
 
+// ── Filtre Yapılandırmaları ──────────────────────────────────────
 const KATEGORILER = [
-    { id: 'hepsi', emoji: '✨', ad: 'Hepsi' },
-    { id: 'topraksiz', emoji: '🌱', ad: 'Topraksız Tarım' },
-    { id: 'ziraat', emoji: '🌾', ad: 'Ziraat Müh.' },
-    { id: 'teknisyen', emoji: '🔧', ad: 'Teknisyen' },
-    { id: 'mudur', emoji: '🏭', ad: 'Üretim Müdürü' },
+    { id: 'hepsi', emoji: '✨', ad: 'Hepsi', eslestir: null },
+    { id: 'topraksiz', emoji: '🌱', ad: 'Topraksız Tarım', eslestir: 'Topraksız Tarım Uzmanı' },
+    { id: 'ziraat', emoji: '🌾', ad: 'Ziraat Mühendisi', eslestir: 'Ziraat Mühendisi' },
+    { id: 'teknisyen', emoji: '🔧', ad: 'Tarım Teknisyeni', eslestir: 'Tarım Teknisyeni' },
+    { id: 'mudur', emoji: '🏭', ad: 'Üretim Müdürü', eslestir: 'Üretim Müdürü' },
 ];
 
+const BOLGELER = [
+    { id: 'hepsi', ad: 'Tüm Bölgeler', anahtar: null },
+    { id: 'ege', ad: '🌊 Ege', anahtar: 'ege' },
+    { id: 'akdeniz', ad: '☀️ Akdeniz', anahtar: 'akdeniz' },
+    { id: 'marmara', ad: '🏙️ Marmara', anahtar: 'marmara' },
+    { id: 'ic_anadolu', ad: '🌾 İç Anadolu', anahtar: 'iç anadolu' },
+    { id: 'guneydogu', ad: '🏜️ Güneydoğu', anahtar: 'güneydoğu' },
+    { id: 'tum_turkiye', ad: '🇹🇷 Tüm Türkiye', anahtar: 'tüm türkiye' },
+];
+
+// ── Bileşen ─────────────────────────────────────────────────────
 export default function MarketplaceEkrani({ navigation }) {
     const [aramaMetni, setAramaMetni] = useState('');
     const [seciliKategori, setSeciliKategori] = useState('hepsi');
-    const baslikOpak = useRef(new Animated.Value(0)).current;
+    const [seciliBolge, setSeciliBolge] = useState('hepsi');
+    const fadeAnim = useRef(new Animated.Value(0)).current;
 
     useEffect(() => {
-        Animated.timing(baslikOpak, { toValue: 1, duration: 500, useNativeDriver: true }).start();
+        Animated.timing(fadeAnim, { toValue: 1, duration: 500, useNativeDriver: true }).start();
     }, []);
 
-    // Arama + kategori filtresi
-    const filtreliUzmanlar = DEMO_UZMANLAR.filter((u) => {
-        const aramaUyumu =
-            aramaMetni.length === 0 ||
-            u.ad.toLowerCase().includes(aramaMetni.toLowerCase()) ||
-            u.kategori.toLowerCase().includes(aramaMetni.toLowerCase()) ||
-            u.konum.toLowerCase().includes(aramaMetni.toLowerCase()) ||
-            (u.hizmetBolgesi || '').toLowerCase().includes(aramaMetni.toLowerCase());
+    // Gerçek zamanlı birleşik filtre
+    const filtreliUzmanlar = useCallback(() => {
+        const ara = aramaMetni.toLowerCase().trim();
+        const kat = KATEGORILER.find(k => k.id === seciliKategori);
+        const bolge = BOLGELER.find(b => b.id === seciliBolge);
 
-        const kategoriUyumu =
-            seciliKategori === 'hepsi' ||
-            u.kategori.toLowerCase().includes(
-                KATEGORILER.find((k) => k.id === seciliKategori)?.ad.toLowerCase().replace('.', '') || ''
-            );
+        return DEMO_UZMANLAR.filter(u => {
+            // 1. Metin araması: ad VEYA referans proje
+            const aramaOK = !ara ||
+                u.ad.toLowerCase().includes(ara) ||
+                (u.referansProje || '').toLowerCase().includes(ara);
 
-        return aramaUyumu && kategoriUyumu;
-    });
+            // 2. Kategori (kesin eşleşme)
+            const katOK = !kat?.eslestir || u.kategori === kat.eslestir;
 
-    const uzmanDetayGit = (uzman) => {
-        navigation.navigate('UzmanDetay', { uzman });
+            // 3. Bölge (kısmi eşleşme)
+            const bolgeOK = !bolge?.anahtar ||
+                (u.hizmetBolgesi || '').toLowerCase().includes(bolge.anahtar);
+
+            return aramaOK && katOK && bolgeOK;
+        });
+    }, [aramaMetni, seciliKategori, seciliBolge]);
+
+    const sonuclar = filtreliUzmanlar();
+
+    const aktifFiltre = (seciliKategori !== 'hepsi' ? 1 : 0) + (seciliBolge !== 'hepsi' ? 1 : 0);
+
+    const filtreleriTemizle = () => {
+        setAramaMetni('');
+        setSeciliKategori('hepsi');
+        setSeciliBolge('hepsi');
     };
 
     return (
         <View style={stiller.kapsayici}>
             <StatusBar barStyle="light-content" backgroundColor={Renkler.zeminkk} />
 
-            {/* Üst başlık */}
-            <Animated.View style={[stiller.ustBolum, { opacity: baslikOpak }]}>
+            <Animated.View style={[stiller.ust, { opacity: fadeAnim }]}>
+
+                {/* ── Başlık satırı ── */}
                 <View style={stiller.baslikSatiri}>
                     <View>
-                        <Text style={stiller.baslik}>Sarı Sayfalar 🌾</Text>
+                        <Text style={stiller.baslik}>Uzman Bul 🌾</Text>
                         <Text style={stiller.altBaslik}>
-                            {filtreliUzmanlar.length} profesyonel bulundu
+                            {sonuclar.length} profesyonel listeleniyor
                         </Text>
                     </View>
-                    <View style={stiller.piRozet}>
-                        <Text style={stiller.piRozetMetin}>π</Text>
-                    </View>
-                </View>
-
-                {/* Arama çubuğu */}
-                <View style={stiller.aramaSarici}>
-                    <Text style={stiller.aramaIkon}>🔍</Text>
-                    <TextInput
-                        style={stiller.aramaInput}
-                        value={aramaMetni}
-                        onChangeText={setAramaMetni}
-                        placeholder="İsim, uzmanlık, konum veya bölge ara..."
-                        placeholderTextColor={Renkler.metinFade}
-                    />
-                    {aramaMetni.length > 0 && (
-                        <TouchableOpacity onPress={() => setAramaMetni('')}>
-                            <Text style={stiller.temizle}>✕</Text>
+                    {aktifFiltre > 0 && (
+                        <TouchableOpacity style={stiller.temizleBtn} onPress={filtreleriTemizle}>
+                            <Text style={stiller.temizleBtnMetin}>✕ Filtreleri Sıfırla ({aktifFiltre})</Text>
                         </TouchableOpacity>
                     )}
                 </View>
 
-                {/* Kategori filtreleri */}
-                <ScrollView
-                    horizontal
-                    showsHorizontalScrollIndicator={false}
-                    contentContainerStyle={stiller.kategoriKaydirma}
-                >
-                    {KATEGORILER.map((kat) => (
-                        <KategoriCipi
-                            key={kat.id}
-                            emoji={kat.emoji}
-                            ad={kat.ad}
-                            secili={seciliKategori === kat.id}
-                            onPress={() => setSeciliKategori(kat.id)}
-                        />
-                    ))}
-                </ScrollView>
+                {/* ── Arama çubuğu: Ad + Referans Proje ── */}
+                <View style={stiller.aramaKutu}>
+                    <Text style={stiller.aramaSimge}>🔍</Text>
+                    <TextInput
+                        style={stiller.aramaInput}
+                        value={aramaMetni}
+                        onChangeText={setAramaMetni}
+                        placeholder="Ad veya referans proje adı ara..."
+                        placeholderTextColor={Renkler.metinFade}
+                        returnKeyType="search"
+                    />
+                    {aramaMetni.length > 0 && (
+                        <TouchableOpacity onPress={() => setAramaMetni('')} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+                            <Text style={stiller.aramaTemizle}>✕</Text>
+                        </TouchableOpacity>
+                    )}
+                </View>
+
+                {/* ── Filtre Paneli ── */}
+                <View style={stiller.filtrePanel}>
+                    {/* Kategori */}
+                    <Text style={stiller.filtreBaslik}>📂 KATEGORİ</Text>
+                    <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={stiller.cipSatir}>
+                        {KATEGORILER.map(kat => {
+                            const secili = seciliKategori === kat.id;
+                            return (
+                                <TouchableOpacity
+                                    key={kat.id}
+                                    style={[stiller.cip, secili && stiller.cipSecili]}
+                                    onPress={() => setSeciliKategori(kat.id)}
+                                    activeOpacity={0.75}
+                                >
+                                    <Text style={stiller.cipEmoji}>{kat.emoji}</Text>
+                                    <Text style={[stiller.cipMetin, secili && stiller.cipMetinSecili]}>
+                                        {kat.ad}
+                                    </Text>
+                                </TouchableOpacity>
+                            );
+                        })}
+                    </ScrollView>
+
+                    {/* Bölge */}
+                    <Text style={[stiller.filtreBaslik, { marginTop: 10 }]}>🗺️ HİZMET BÖLGESİ</Text>
+                    <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={stiller.cipSatir}>
+                        {BOLGELER.map(bolge => {
+                            const secili = seciliBolge === bolge.id;
+                            return (
+                                <TouchableOpacity
+                                    key={bolge.id}
+                                    style={[stiller.cip, secili && stiller.cipBolgeSecili]}
+                                    onPress={() => setSeciliBolge(bolge.id)}
+                                    activeOpacity={0.75}
+                                >
+                                    <Text style={[stiller.cipMetin, secili && stiller.cipBolgeMetinSecili]}>
+                                        {bolge.ad}
+                                    </Text>
+                                </TouchableOpacity>
+                            );
+                        })}
+                    </ScrollView>
+                </View>
             </Animated.View>
 
-            {/* Uzman listesi */}
+            {/* ── Uzman Listesi ── */}
             <FlatList
-                data={filtreliUzmanlar}
-                keyExtractor={(item) => item.id}
+                data={sonuclar}
+                keyExtractor={item => item.id}
                 renderItem={({ item, index }) => (
                     <UzmanKarti
                         uzman={item}
-                        onBasildi={() => uzmanDetayGit(item)}
-                        gecikme={index * 80}
+                        onBasildi={() => navigation.navigate('UzmanDetay', { uzman: item })}
+                        gecikme={index * 60}
                     />
                 )}
-                contentContainerStyle={stiller.listeIcerik}
+                contentContainerStyle={stiller.liste}
                 showsVerticalScrollIndicator={false}
+                keyboardShouldPersistTaps="handled"
                 ListEmptyComponent={
-                    <View style={stiller.bos}>
-                        <Text style={stiller.bosEmoji}>🔍</Text>
-                        <Text style={stiller.bosMetin}>Sonuç bulunamadı</Text>
-                        <Text style={stiller.bosAlt}>Farklı bir arama deneyin</Text>
+                    <View style={stiller.bosEkran}>
+                        <Text style={stiller.bosEmoji}>🌾</Text>
+                        <Text style={stiller.bosBaslik}>Uzman Bulunamadı</Text>
+                        <Text style={stiller.bosAlt}>
+                            Bu kriterlere uygun uzman bulunamadı.{'\n'}Farklı bir kategori veya bölge seçin.
+                        </Text>
+                        <TouchableOpacity style={stiller.bosBtn} onPress={filtreleriTemizle}>
+                            <Text style={stiller.bosBtnMetin}>Tüm Filtreleri Kaldır</Text>
+                        </TouchableOpacity>
                     </View>
                 }
             />
@@ -240,60 +246,91 @@ export default function MarketplaceEkrani({ navigation }) {
     );
 }
 
+// ── Stiller ─────────────────────────────────────────────────────
 const stiller = StyleSheet.create({
     kapsayici: { flex: 1, backgroundColor: Renkler.zemin },
 
-    // Üst bölüm
-    ustBolum: {
-        paddingTop: 60,
+    // Header
+    ust: {
+        paddingTop: 56,
         paddingHorizontal: 20,
-        paddingBottom: 8,
         backgroundColor: Renkler.zemin,
         borderBottomWidth: 1,
         borderBottomColor: Renkler.ayirici,
     },
     baslikSatiri: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: 16,
+        flexDirection: 'row', justifyContent: 'space-between',
+        alignItems: 'center', marginBottom: 14,
     },
     baslik: { fontSize: 24, fontWeight: '800', color: Renkler.metinAna },
     altBaslik: { fontSize: 13, color: Renkler.metinFade, marginTop: 2 },
-    piRozet: {
-        width: 40,
-        height: 40,
-        borderRadius: 20,
-        backgroundColor: Renkler.yarimSeffafAltin,
-        borderWidth: 1.5,
-        borderColor: Renkler.piAltin,
-        justifyContent: 'center',
-        alignItems: 'center',
+
+    temizleBtn: {
+        backgroundColor: 'rgba(239,83,80,0.12)',
+        borderRadius: 16, borderWidth: 1,
+        borderColor: 'rgba(239,83,80,0.4)',
+        paddingHorizontal: 12, paddingVertical: 6,
     },
-    piRozetMetin: { fontSize: 20, color: Renkler.piAltin, fontWeight: '900' },
+    temizleBtnMetin: { fontSize: 12, color: Renkler.hata, fontWeight: '700' },
 
     // Arama
-    aramaSarici: {
-        flexDirection: 'row',
-        alignItems: 'center',
+    aramaKutu: {
+        flexDirection: 'row', alignItems: 'center',
         backgroundColor: Renkler.girdiZemin,
-        borderRadius: 14,
-        paddingHorizontal: 14,
-        marginBottom: 14,
-        borderWidth: 1,
-        borderColor: Renkler.ayirici,
+        borderRadius: 14, paddingHorizontal: 14,
+        marginBottom: 14, borderWidth: 1, borderColor: Renkler.ayirici,
+        height: 46,
     },
-    aramaIkon: { fontSize: 16, marginRight: 8 },
-    aramaInput: { flex: 1, paddingVertical: 12, fontSize: 14, color: Renkler.metinAna },
-    temizle: { fontSize: 14, color: Renkler.metinFade, padding: 4 },
+    aramaSimge: { fontSize: 16, marginRight: 8 },
+    aramaInput: { flex: 1, fontSize: 14, color: Renkler.metinAna },
+    aramaTemizle: { fontSize: 14, color: Renkler.metinFade, padding: 4 },
 
-    // Kategori kaydırma
-    kategoriKaydirma: { paddingVertical: 8, gap: 8 },
+    // Filtre paneli
+    filtrePanel: {
+        backgroundColor: Renkler.kartZemin,
+        borderRadius: 16, borderWidth: 1,
+        borderColor: Renkler.ayirici,
+        padding: 14, marginBottom: 14,
+    },
+    filtreBaslik: {
+        fontSize: 10, fontWeight: '800', color: Renkler.metinFade,
+        letterSpacing: 1.2, marginBottom: 8,
+    },
+    cipSatir: { gap: 8, paddingBottom: 2 },
+    cip: {
+        flexDirection: 'row', alignItems: 'center', gap: 5,
+        paddingHorizontal: 12, paddingVertical: 7,
+        borderRadius: 20, borderWidth: 1.5,
+        borderColor: Renkler.ayirici,
+        backgroundColor: 'rgba(255,255,255,0.04)',
+    },
+    cipSecili: {
+        borderColor: Renkler.piAltin,
+        backgroundColor: 'rgba(240,192,64,0.15)',
+    },
+    cipBolgeSecili: {
+        borderColor: '#4CAF50',
+        backgroundColor: 'rgba(76,175,80,0.15)',
+    },
+    cipEmoji: { fontSize: 13 },
+    cipMetin: { fontSize: 13, color: Renkler.metinIkincil, fontWeight: '600' },
+    cipMetinSecili: { color: Renkler.piAltin },
+    cipBolgeMetinSecili: { color: '#4CAF50' },
 
     // Liste
-    listeIcerik: { padding: 16, paddingTop: 12 },
-    bos: { alignItems: 'center', paddingTop: 60 },
-    bosEmoji: { fontSize: 48, marginBottom: 16 },
-    bosMetin: { fontSize: 18, fontWeight: '700', color: Renkler.metinIkincil },
-    bosAlt: { fontSize: 13, color: Renkler.metinFade, marginTop: 6 },
+    liste: { padding: 16, paddingTop: 12 },
+
+    // Boş durum
+    bosEkran: { alignItems: 'center', paddingTop: 60, paddingHorizontal: 32 },
+    bosEmoji: { fontSize: 52, marginBottom: 14 },
+    bosBaslik: { fontSize: 20, fontWeight: '800', color: Renkler.metinAna, marginBottom: 8 },
+    bosAlt: {
+        fontSize: 14, color: Renkler.metinFade, textAlign: 'center',
+        lineHeight: 22, marginBottom: 24,
+    },
+    bosBtn: {
+        paddingHorizontal: 24, paddingVertical: 12,
+        borderRadius: 20, borderWidth: 1.5, borderColor: Renkler.piAltin,
+    },
+    bosBtnMetin: { fontSize: 14, color: Renkler.piAltin, fontWeight: '700' },
 });

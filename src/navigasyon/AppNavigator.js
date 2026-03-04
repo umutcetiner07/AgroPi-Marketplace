@@ -1,18 +1,21 @@
 // AgroPi Marketplace — Navigasyon Yöneticisi
-// Pi login → profil tamamlama → tab navigator (Marketplace, Profil)
+// Tab navigator: Ana Sayfa (İş İlanları) + Uzman Bul + Profilim
+// Stack: UzmanDetay + İş İlanı Ver (modal)
 
 import React, { useEffect, useState } from 'react';
-import { View, ActivityIndicator } from 'react-native';
+import { View, ActivityIndicator, Text } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Text } from 'react-native';
 
 // Ekranlar
 import GirisEkrani from '../ekranlar/GirisEkrani';
 import ProfilTamamlamaEkrani from '../ekranlar/ProfilTamamlamaEkrani';
+import AnaSayfaEkrani from '../ekranlar/AnaSayfaEkrani';
 import MarketplaceEkrani from '../ekranlar/MarketplaceEkrani';
 import UzmanDetayEkrani from '../ekranlar/UzmanDetayEkrani';
+import IsIlaniEkrani from '../ekranlar/IsIlaniEkrani';
+import IsDetayEkrani from '../ekranlar/IsDetayEkrani';
 import ProfilEkrani from '../ekranlar/ProfilEkrani';
 
 import Renkler from '../tema/renkler';
@@ -20,7 +23,7 @@ import Renkler from '../tema/renkler';
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
-// Alt sekme navigatörü (Ana uygulama)
+// ── Alt Sekme Navigatörü ───────────────────────────────────────
 function AnaTabNavigator() {
     return (
         <Tab.Navigator
@@ -36,22 +39,34 @@ function AnaTabNavigator() {
                 },
                 tabBarActiveTintColor: Renkler.piAltin,
                 tabBarInactiveTintColor: Renkler.metinFade,
-                tabBarLabelStyle: {
-                    fontSize: 11,
-                    fontWeight: '600',
-                },
+                tabBarLabelStyle: { fontSize: 10, fontWeight: '700' },
             }}
         >
+            {/* 1. Tab: Ana Sayfa — İş Fırsatları */}
+            <Tab.Screen
+                name="AnaSayfa"
+                component={AnaSayfaEkrani}
+                options={{
+                    tabBarLabel: 'İş Fırsatları',
+                    tabBarIcon: ({ color, size }) => (
+                        <Text style={{ fontSize: size - 4, color }}>💼</Text>
+                    ),
+                }}
+            />
+
+            {/* 2. Tab: Uzman Bul — Marketplace */}
             <Tab.Screen
                 name="Marketplace"
                 component={MarketplaceEkrani}
                 options={{
-                    tabBarLabel: 'Keşfet',
+                    tabBarLabel: 'Uzman Bul',
                     tabBarIcon: ({ color, size }) => (
                         <Text style={{ fontSize: size - 4, color }}>🌾</Text>
                     ),
                 }}
             />
+
+            {/* 3. Tab: Profilim */}
             <Tab.Screen
                 name="Profilim"
                 component={ProfilEkrani}
@@ -66,7 +81,7 @@ function AnaTabNavigator() {
     );
 }
 
-// Kimlik doğrulama yığını
+// ── Kimlik Doğrulama Yığını ────────────────────────────────────
 function KimlikYigini() {
     return (
         <Stack.Navigator screenOptions={{ headerShown: false, animation: 'fade' }}>
@@ -76,7 +91,7 @@ function KimlikYigini() {
     );
 }
 
-// Ana uygulama yığını (giriş sonrası)
+// ── Ana Uygulama Yığını (Giriş Sonrası) ───────────────────────
 function UygulamaYigini() {
     return (
         <Stack.Navigator
@@ -91,21 +106,28 @@ function UygulamaYigini() {
                 component={UzmanDetayEkrani}
                 options={{ animation: 'slide_from_right' }}
             />
+            <Stack.Screen
+                name="IsIlaniVer"
+                component={IsIlaniEkrani}
+                options={{ animation: 'slide_from_bottom' }}
+            />
+            <Stack.Screen
+                name="IsDetay"
+                component={IsDetayEkrani}
+                options={{ animation: 'slide_from_right' }}
+            />
         </Stack.Navigator>
     );
 }
 
-// Ana navigasyon bileşeni
+// ── Ana Navigasyon ─────────────────────────────────────────────
 export default function AppNavigator() {
     const [piKullanici, setPiKullanici] = useState(null);
     const [yukleniyor, setYukleniyor] = useState(true);
 
     useEffect(() => {
-        // Oturum bilgisini kontrol et (AsyncStorage'dan okumak için genişletilebilir)
-        const oturumKontrol = setTimeout(() => {
-            setYukleniyor(false);
-        }, 800);
-        return () => clearTimeout(oturumKontrol);
+        const kontrol = setTimeout(() => setYukleniyor(false), 800);
+        return () => clearTimeout(kontrol);
     }, []);
 
     if (yukleniyor) {
