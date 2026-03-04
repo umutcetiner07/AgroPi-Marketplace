@@ -202,6 +202,15 @@ export default function IsDetayEkrani({ route, navigation }) {
                     )}
                 </TouchableOpacity>
 
+                {/* 💳 Ödeme Yap (İşveren için) */}
+                <TouchableOpacity
+                    style={s.odemeBtn}
+                    onPress={() => navigation.navigate('Odeme', { ilan, uzman: null })}
+                    activeOpacity={0.85}
+                >
+                    <Text style={s.odemedBtnMetin}>💳 Ödeme Yap (Testnet)</Text>
+                </TouchableOpacity>
+
                 {/* ── İşveren Görünümü: Başvuranlar ── */}
                 <TouchableOpacity
                     style={s.isverenToggle}
@@ -336,6 +345,14 @@ const s = StyleSheet.create({
         shadowColor: Renkler.basarili,
     },
     basvuruBtnMetin: { fontSize: 16, fontWeight: '800', color: Renkler.zeminkk },
+
+    // Ödeme Yap butonu
+    odemeBtn: {
+        backgroundColor: 'rgba(103,58,183,0.15)', borderRadius: 16,
+        paddingVertical: 14, alignItems: 'center', marginBottom: 16,
+        borderWidth: 1.5, borderColor: '#7E57C2',
+    },
+    odemedBtnMetin: { fontSize: 15, fontWeight: '800', color: '#7E57C2' },
 
     // İşveren toggle
     isverenToggle: {

@@ -54,7 +54,7 @@ export const piBrowserMi = () => {
 };
 
 // Aktif SDK'yı al (gerçek veya mock)
-const piSDKAl = () => {
+export const piSDKAl = () => {
     if (piBrowserMi()) {
         return global.Pi;
     }

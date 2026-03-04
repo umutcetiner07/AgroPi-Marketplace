@@ -17,6 +17,7 @@ import UzmanDetayEkrani from '../ekranlar/UzmanDetayEkrani';
 import IsIlaniEkrani from '../ekranlar/IsIlaniEkrani';
 import IsDetayEkrani from '../ekranlar/IsDetayEkrani';
 import SohbetEkrani from '../ekranlar/SohbetEkrani';
+import OdemeEkrani from '../ekranlar/OdemeEkrani';
 import ProfilEkrani from '../ekranlar/ProfilEkrani';
 
 import Renkler from '../tema/renkler';
@@ -123,6 +124,11 @@ function UygulamaYigini() {
                 name="Sohbet"
                 component={SohbetEkrani}
                 options={{ animation: 'slide_from_right' }}
+            />
+            <Stack.Screen
+                name="Odeme"
+                component={OdemeEkrani}
+                options={{ animation: 'slide_from_bottom' }}
             />
         </Stack.Navigator>
     );
