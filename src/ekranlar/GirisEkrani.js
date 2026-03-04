@@ -14,7 +14,8 @@ import {
     ActivityIndicator,
     Dimensions,
 } from 'react-native';
-import { piGirisYap, piBrowserMi } from '../pi/PiSDKKoprusu';
+import { piSDKBaslat, piIleGirisYap } from '../pi/PiAuthService';
+import { piBrowserMi } from '../pi/PiSDKKoprusu';
 import Renkler from '../tema/renkler';
 
 const { width, height } = Dimensions.get('window');
@@ -30,8 +31,10 @@ export default function GirisEkrani({ navigation }) {
     const donmeAnim = useRef(new Animated.Value(0)).current;
 
     useEffect(() => {
-        // Pi Browser kontrolü — AgroPi-v2'deki navigatör tespitinin karşılığı
         setMockMod(!piBrowserMi());
+
+        // Pi SDK'yı sandbox modunda başlat
+        piSDKBaslat();
 
         // Giriş animasyonları
         Animated.parallel([
@@ -55,13 +58,19 @@ export default function GirisEkrani({ navigation }) {
     const girisYap = async () => {
         setYukleniyor(true);
         try {
-            const piKullanici = await piGirisYap();
+            // PiAuthService: Pi.authenticate → Firestore eşleştir → AsyncStorage kaydet
+            const tamProfil = await piIleGirisYap();
 
-            // Kullanıcı bilgilerini bir sonraki ekrana ilet
-            navigation.navigate('ProfilTamamlama', {
-                piKullanici,
-                yeniKullanici: true,
-            });
+            if (tamProfil.profilTamamlandi) {
+                // Mevcut kullanıcı → doğrudan uygulamaya
+                navigation.replace('AnaTabs', { piKullanici: tamProfil });
+            } else {
+                // Yeni kullanıcı → profil tamamlama ekranı
+                navigation.navigate('ProfilTamamlama', {
+                    piKullanici: tamProfil,
+                    yeniKullanici: true,
+                });
+            }
         } catch (hata) {
             Alert.alert(
                 'Giriş Başarısız',

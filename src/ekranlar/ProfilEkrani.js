@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../config/firebase';
+import { cikisYap as piCikisYap } from '../pi/PiAuthService';
 import Renkler from '../tema/renkler';
 import PiSabitleri from '../pi/PiSabitleri';
 

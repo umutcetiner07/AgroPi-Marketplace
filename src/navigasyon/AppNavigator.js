@@ -20,6 +20,7 @@ import SohbetEkrani from '../ekranlar/SohbetEkrani';
 import ProfilEkrani from '../ekranlar/ProfilEkrani';
 
 import Renkler from '../tema/renkler';
+import { kaydedilmisOturumAl, piSDKBaslat } from '../pi/PiAuthService';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -133,8 +134,20 @@ export default function AppNavigator() {
     const [yukleniyor, setYukleniyor] = useState(true);
 
     useEffect(() => {
-        const kontrol = setTimeout(() => setYukleniyor(false), 800);
-        return () => clearTimeout(kontrol);
+        const baslat = async () => {
+            try {
+                piSDKBaslat();
+                const kayitliKullanici = await kaydedilmisOturumAl();
+                if (kayitliKullanici) {
+                    setPiKullanici(kayitliKullanici);
+                }
+            } catch (e) {
+                console.warn('[AgroPi] Oturum yükleme hatası:', e.message);
+            } finally {
+                setYukleniyor(false);
+            }
+        };
+        baslat();
     }, []);
 
     if (yukleniyor) {
