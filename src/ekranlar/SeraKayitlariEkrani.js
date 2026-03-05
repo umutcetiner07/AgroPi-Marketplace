@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 import { collection, addDoc, getDocs, query, orderBy, limit, serverTimestamp } from 'firebase/firestore';
 import { db } from '../config/firebase';
+import { kaydedilmisOturumAl } from '../pi/PiAuthService';
 import Renkler from '../tema/renkler';
 
 // Demo kayıtlar (Firebase bağlanana kadar gösterilir)
@@ -90,12 +91,15 @@ export default function SeraKayitlariEkrani({ navigation }) {
     const [yukleniyor, setYukleniyor] = useState(false);
     const [kayitlar, setKayitlar] = useState(DEMO_KAYITLAR);
     const [listeYukleniyor, setListeYukleniyor] = useState(false);
+    const [piKullanici, setPiKullanici] = useState(null);
 
     const fadeAnim = useRef(new Animated.Value(0)).current;
 
     useEffect(() => {
         Animated.timing(fadeAnim, { toValue: 1, duration: 450, useNativeDriver: true }).start();
         kayitlariYukle();
+        // Pi oturumunu al
+        kaydedilmisOturumAl().then(k => { if (k) setPiKullanici(k); });
     }, []);
 
     const kayitlariYukle = async () => {
@@ -137,6 +141,9 @@ export default function SeraKayitlariEkrani({ navigation }) {
                 ecSeviyesi: ec,
                 bitkiBuyumeDurumu: bitkiBuyumeDurumu.trim(),
                 olusturmaTarihi: serverTimestamp(),
+                // Pi Network kullanıcı bilgileri
+                piKullaniciId: piKullanici?.kullaniciId ?? null,
+                piKullaniciAdi: piKullanici?.kullaniciAdi ?? null,
             };
 
             if (db) {
