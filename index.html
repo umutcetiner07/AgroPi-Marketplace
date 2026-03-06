@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
     <title>AgroPi Marketplace</title>
     <script src="https://sdk.minepi.com/pi-sdk.js"></script>
     <style>
@@ -98,6 +99,8 @@
                         sandbox: false,
                         appId: '68a6fed62cb50254172b6593'
                     });
+                    
+                    console.log('SDK Başlatıldı');
                     
                     const authResult = await window.Pi.authenticate(['payments', 'username'], {
                         network: 'pi_mainnet',
