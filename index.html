@@ -95,10 +95,12 @@
                 if (typeof window.Pi !== 'undefined') {
                     await window.Pi.init({ 
                         version: "2.0",
-                        sandbox: true
+                        sandbox: false,
+                        appId: '68a6fed62cb50254172b6593'
                     });
                     
                     const authResult = await window.Pi.authenticate(['payments', 'username'], {
+                        network: 'pi_mainnet',
                         onIncompletePaymentFound: (payment) => {
                             console.log('Tamamlanmamış ödeme:', payment);
                             status.textContent = 'Tamamlanmamış ödeme bulundu: ' + payment.identifier;
