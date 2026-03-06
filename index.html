@@ -54,6 +54,11 @@
             background-color: #666;
             cursor: not-allowed;
         }
+        .status {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #7A6A9A;
+        }
     </style>
 </head>
 <body>
@@ -69,37 +74,49 @@
         <button class="button" id="buyBtn" onclick="buyProduct()" style="display: none; background-color: #4CAF50;">
             Satın Al (0.1 π)
         </button>
+        
+        <div class="status" id="status"></div>
     </div>
 
     <script>
+        // Pi Ecosystem AI API Key
+        const PI_API_KEY = '5inedspkbqoa4bz4tljrimau6rl7yvwnwkeinebxrgy2jwtiryyuh3g15jxyqjqj';
+        
         let piUser = null;
 
         async function connectPi() {
             const btn = document.getElementById('connectBtn');
+            const status = document.getElementById('status');
             btn.disabled = true;
             btn.textContent = 'Bağlanıyor...';
+            status.textContent = 'Pi Network bağlantısı kuruluyor...';
 
             try {
                 if (typeof window.Pi !== 'undefined') {
-                    await window.Pi.init({ version: "2.0" });
+                    await window.Pi.init({ 
+                        version: "2.0",
+                        sandbox: true
+                    });
                     
                     const authResult = await window.Pi.authenticate(['payments', 'username'], {
                         onIncompletePaymentFound: (payment) => {
                             console.log('Tamamlanmamış ödeme:', payment);
+                            status.textContent = 'Tamamlanmamış ödeme bulundu: ' + payment.identifier;
                         }
                     });
 
                     piUser = authResult.user;
                     btn.style.display = 'none';
                     document.getElementById('buyBtn').style.display = 'block';
+                    status.textContent = `Hoş geldin, ${piUser.username}!`;
                     
                     console.log('Pi kullanıcı:', piUser);
                 } else {
-                    alert('Pi SDK bulunamadı!');
+                    throw new Error('Pi SDK bulunamadı!');
                 }
             } catch (error) {
                 console.error('Pi bağlantı hatası:', error);
-                alert('Bağlantı hatası: ' + error.message);
+                status.textContent = 'Hata: ' + error.message;
                 btn.disabled = false;
                 btn.textContent = 'Pi Network ile Bağlan';
             }
@@ -112,30 +129,90 @@
             }
 
             const btn = document.getElementById('buyBtn');
+            const status = document.getElementById('status');
             btn.disabled = true;
             btn.textContent = 'Ödeme yapılıyor...';
+            status.textContent = 'Ödeme işleniyor...';
 
             try {
-                const payment = await window.Pi.createPayment({
-                    amount: 0.10,
+                // Pi Ecosystem AI ile ödeme oluştur
+                const paymentData = {
+                    amount: 0.1,
                     memo: "AgroPi ürün satın alma",
                     metadata: { 
                         userId: piUser.uid,
-                        product: "AgroPi Premium"
+                        username: piUser.username,
+                        product: "AgroPi Premium",
+                        apiKey: PI_API_KEY
+                    },
+                    payment: {
+                        to_address: "GDLROKVSDNERQXEOOOSLKFBZGFJZEM4WEY3V66E4UAT7UPHWF72XCKTL",
+                        amount: 0.1,
+                        memo: "AgroPi Marketplace - Premium Ürün"
                     }
-                });
+                };
+
+                console.log('Ödeme verileri:', paymentData);
+
+                // Pi Network ödeme oluştur
+                const payment = await window.Pi.createPayment(paymentData);
 
                 console.log('Ödeme başarılı:', payment);
-                alert('Ödeme başarılı! Teşekkürler.');
+                status.textContent = 'Ödeme başarılı! Teşekkürler.';
                 btn.textContent = 'Satın Alındı ✓';
+                btn.style.backgroundColor = '#28a745';
+                
+                // Ödeme bilgilerini backend'e gönder
+                await savePaymentToBackend(payment, piUser);
                 
             } catch (error) {
                 console.error('Ödeme hatası:', error);
-                alert('Ödeme hatası: ' + error.message);
+                status.textContent = 'Ödeme hatası: ' + error.message;
                 btn.disabled = false;
                 btn.textContent = 'Satın Al (0.1 π)';
             }
         }
+
+        async function savePaymentToBackend(payment, user) {
+            try {
+                // Ödeme bilgilerini backend'e gönder
+                const response = await fetch('https://api.pi.network/v2/payments', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${PI_API_KEY}`
+                    },
+                    body: JSON.stringify({
+                        payment_id: payment.identifier,
+                        user_id: user.uid,
+                        username: user.username,
+                        amount: 0.1,
+                        status: 'completed',
+                        timestamp: new Date().toISOString()
+                    })
+                });
+
+                if (response.ok) {
+                    console.log('Ödeme backend\'e kaydedildi');
+                } else {
+                    console.error('Backend kayıt hatası:', response.status);
+                }
+            } catch (error) {
+                console.error('Backend bağlantı hatası:', error);
+            }
+        }
+
+        // Sayfa yüklendiğinde Pi SDK kontrolü
+        window.addEventListener('load', () => {
+            if (typeof window.Pi === 'undefined') {
+                document.getElementById('status').textContent = 'Pi SDK yükleniyor...';
+                setTimeout(() => {
+                    if (typeof window.Pi === 'undefined') {
+                        document.getElementById('status').textContent = 'Pi SDK bulunamadı. Lütfen Pi Browser kullanın.';
+                    }
+                }, 3000);
+            }
+        });
     </script>
 </body>
 </html>
