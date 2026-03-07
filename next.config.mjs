@@ -5,6 +5,7 @@ const nextConfig = {
   images: {
     domains: ['localhost'],
   },
+  output: 'standalone',
   ignoreDuringBuilds: true,
   ignoreBuildErrors: true,
   typescript: {
