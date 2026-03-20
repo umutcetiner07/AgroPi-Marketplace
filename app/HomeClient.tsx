@@ -150,41 +150,104 @@ export default function HomeClient() {
                 </div>
             </section>
 
+            {/* Field Sensor Overview */}
+            <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gray-50">
+                <div className="max-w-7xl mx-auto">
+                    <h3 className="text-3xl font-bold text-center text-gray-900 mb-12">
+                        Field Sensor Overview
+                    </h3>
+                    
+                    <div className="grid md:grid-cols-4 gap-6">
+                        {/* Temperature Sensor */}
+                        <div className="bg-white rounded-lg p-6 shadow-md hover:shadow-lg transition-shadow">
+                            <div className="flex items-center justify-between mb-4">
+                                <h4 className="text-lg font-semibold text-gray-800">Temperature</h4>
+                                <span className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Active</span>
+                            </div>
+                            <div className="text-3xl font-bold text-blue-600 mb-2">24.5°C</div>
+                            <div className="text-sm text-gray-600">Optimal: 20-25°C</div>
+                            <div className="mt-4 h-2 bg-gray-200 rounded-full overflow-hidden">
+                                <div className="h-full w-3/4 bg-blue-500 rounded-full"></div>
+                            </div>
+                        </div>
+
+                        {/* Humidity Sensor */}
+                        <div className="bg-white rounded-lg p-6 shadow-md hover:shadow-lg transition-shadow">
+                            <div className="flex items-center justify-between mb-4">
+                                <h4 className="text-lg font-semibold text-gray-800">Humidity</h4>
+                                <span className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Active</span>
+                            </div>
+                            <div className="text-3xl font-bold text-blue-600 mb-2">68%</div>
+                            <div className="text-sm text-gray-600">Optimal: 60-70%</div>
+                            <div className="mt-4 h-2 bg-gray-200 rounded-full overflow-hidden">
+                                <div className="h-full w-4/5 bg-blue-500 rounded-full"></div>
+                            </div>
+                        </div>
+
+                        {/* pH Level */}
+                        <div className="bg-white rounded-lg p-6 shadow-md hover:shadow-lg transition-shadow">
+                            <div className="flex items-center justify-between mb-4">
+                                <h4 className="text-lg font-semibold text-gray-800">pH Level</h4>
+                                <span className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Active</span>
+                            </div>
+                            <div className="text-3xl font-bold text-blue-600 mb-2">6.8</div>
+                            <div className="text-sm text-gray-600">Optimal: 6.0-7.0</div>
+                            <div className="mt-4 h-2 bg-gray-200 rounded-full overflow-hidden">
+                                <div className="h-full w-3/4 bg-blue-500 rounded-full"></div>
+                            </div>
+                        </div>
+
+                        {/* Light Level */}
+                        <div className="bg-white rounded-lg p-6 shadow-md hover:shadow-lg transition-shadow">
+                            <div className="flex items-center justify-between mb-4">
+                                <h4 className="text-lg font-semibold text-gray-800">Light Level</h4>
+                                <span className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Active</span>
+                            </div>
+                            <div className="text-3xl font-bold text-blue-600 mb-2">8500 lux</div>
+                            <div className="text-sm text-gray-600">Optimal: 6000-10000 lux</div>
+                            <div className="mt-4 h-2 bg-gray-200 rounded-full overflow-hidden">
+                                <div className="h-full w-5/6 bg-blue-500 rounded-full"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             {/* Features */}
             <section className="py-16 px-4 sm:px-6 lg:px-8 bg-white">
                 <div className="max-w-7xl mx-auto">
                     <h3 className="text-3xl font-bold text-center text-gray-900 mb-12">
-                        Platform Özellikleri
+                        Smart Farming Features
                     </h3>
                     
                     <div className="grid md:grid-cols-3 gap-8">
                         <div className="text-center p-6">
                             <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                <span className="text-2xl">🌱</span>
+                                <span className="text-2xl">🌡</span>
                             </div>
-                            <h4 className="text-xl font-semibold mb-2">Tarım Ürünleri</h4>
+                            <h4 className="text-xl font-semibold mb-2">Real-time Monitoring</h4>
                             <p className="text-gray-600">
-                                Taze ve organik tarım ürünleri, doğrudan çiftçiden size
+                                Live sensor data and field conditions tracking
                             </p>
                         </div>
                         
                         <div className="text-center p-6">
                             <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                <span className="text-2xl">π</span>
+                                <span className="text-2xl">�</span>
                             </div>
-                            <h4 className="text-xl font-semibold mb-2">Pi Network Ödemeler</h4>
+                            <h4 className="text-xl font-semibold mb-2">AI Recommendations</h4>
                             <p className="text-gray-600">
-                                Hızlı ve güvenli Pi Network ile kripto ödeme sistemi
+                                Intelligent farming advice and crop management
                             </p>
                         </div>
                         
                         <div className="text-center p-6">
                             <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                <span className="text-2xl">🤝</span>
+                                <span className="text-2xl">📊</span>
                             </div>
-                            <h4 className="text-xl font-semibold mb-2">Güvenli Ticaret</h4>
+                            <h4 className="text-xl font-semibold mb-2">Data Analytics</h4>
                             <p className="text-gray-600">
-                                Decentralize sistem ile güvenli alım satım deneyimi
+                                Comprehensive field performance analysis
                             </p>
                         </div>
                     </div>

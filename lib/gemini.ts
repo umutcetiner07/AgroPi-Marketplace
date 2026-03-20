@@ -2,19 +2,19 @@ import { GoogleGenerativeAI } from '@google/generative-ai'
 
 const genAI = new GoogleGenerativeAI(process.env.NEXT_PUBLIC_GEMINI_API_KEY || '')
 
-const AGROPI_SYSTEM_PROMPT = `Sen AgroPi Akıllı Tarım Danışmanı'sın. Uzmanlık alanların:
-- Topprak analizi ve besin takviyesi önerileri
-- Sulama programları ve su yönetimi
-- Bitki sağlığı ve hastalık teşhisi
-- Gübreleme zamanlaması ve miktarları
-- İklim koşullarına göre tarım stratejileri
+const AGROPI_SYSTEM_PROMPT = `You are AgroPi AI Advisor. Your expertise areas:
+- Soil analysis and nutrient recommendations
+- Irrigation programs and water management
+- Crop health and disease diagnosis
+- Fertilization timing and quantities
+- Farming strategies based on climate conditions
 
-Kullanıcıya profesyonel, çözüm odaklı ve pratik tavsiyeler ver. 
-Cevaplarını Türkçe ve samimi bir dille yaz.
-Tarım terminolojisini basit bir şekilde açıkla.
-Her zaman güvenilir ve bilimsel bilgiye dayanı.
+Provide professional, solution-oriented and practical advice to users. 
+Respond in English with a friendly and expert tone.
+Explain farming terminology in simple terms.
+Always base your responses on reliable and scientific information.
 
-Başlangıç mesajı: "Merhaba, ben AgroPi asistanın. Tarlan ve ürünlerin hakkında sana nasıl yardımcı olabilirim?"`
+Initial message: "Hello, I'm AgroPi AI assistant. How can I help you with your crops and field management?"`
 
 export async function generateAgroPiResponse(userMessage: string): Promise<string> {
   try {
@@ -22,9 +22,9 @@ export async function generateAgroPiResponse(userMessage: string): Promise<strin
     
     const prompt = `${AGROPI_SYSTEM_PROMPT}
 
-Kullanıcı mesajı: "${userMessage}"
+User message: "${userMessage}"
 
-Lütfen tarım danışmanı olarak yanıt ver:`
+Please respond as a farming advisor:`
 
     const result = await model.generateContent(prompt)
     const response = await result.response
@@ -34,23 +34,23 @@ Lütfen tarım danışmanı olarak yanıt ver:`
   } catch (error) {
     console.error('Gemini API error:', error)
     
-    // Fallback yanıtlar
-    if (userMessage.toLowerCase().includes('merhaba') || userMessage.toLowerCase().includes('selam')) {
-      return "Merhaba, ben AgroPi asistanın. Tarlan ve ürünlerin hakkında sana nasıl yardımcı olabilirim?"
+    // Fallback responses
+    if (userMessage.toLowerCase().includes('hello') || userMessage.toLowerCase().includes('hi')) {
+      return "Hello, I'm AgroPi AI assistant. How can I help you with your crops and field management?"
     }
     
-    if (userMessage.toLowerCase().includes('sensör') || userMessage.toLowerCase().includes('veri')) {
-      return "Sensör verilerini analiz etmek için lütfen spesifik olarak hangi veriyi (nem, sıcaklık, pH, ışık) öğrenmek istediğini belirt. Bu sayede daha doğru tavsiyeler verebilirim."
+    if (userMessage.toLowerCase().includes('sensor') || userMessage.toLowerCase().includes('data')) {
+      return "For sensor data analysis, please specify which data (moisture, temperature, pH, light) you want to analyze. This way I can provide more accurate recommendations."
     }
     
-    if (userMessage.toLowerCase().includes('sulama')) {
-      return "Sulama için toprak nemini kontrol et. Eğer nem %60'ın altındaysa, bitki türüne göre ortalama 15-30 dakika sulama yap. Sabah erken saatlerde sulama en iyisidir."
+    if (userMessage.toLowerCase().includes('irrigation')) {
+      return "Check soil moisture for irrigation. If moisture is below 60%, water for 15-30 minutes depending on crop type. Early morning irrigation is best."
     }
     
-    return "Şu anda teknik bir sorun yaşıyorum. Lütfen daha sonra tekrar sor veya tarım danışmanlığı için spesifik bir konu belirt."
+    return "I'm experiencing technical difficulties at the moment. Please try again later or specify a specific topic for farming advice."
   }
 }
 
 export async function getInitialMessage(): Promise<string> {
-  return "Merhaba, ben AgroPi asistanın. Tarlan ve ürünlerin hakkında sana nasıl yardımcı olabilirim?"
+  return "Hello, I'm AgroPi AI assistant. How can I help you with your crops and field management?"
 }

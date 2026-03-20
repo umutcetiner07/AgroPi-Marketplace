@@ -6,20 +6,20 @@ const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
   title: {
-    default: 'AgroPi Marketplace',
-    template: '%s | AgroPi Marketplace'
+    default: 'AgroPi Smart Farming',
+    template: '%s | AgroPi Smart Farming'
   },
-  description: 'AgroPi — Pi Network üzerinden yapay zeka destekli tarımsal yönetim',
+  description: 'AgroPi — AI-powered smart farming advisor and field management system',
   metadataBase: new URL('https://agropicbecaed4844.pinet.com'),
   icons: {
     icon: '/favicon.ico',
     apple: '/apple-touch-icon.png',
   },
   openGraph: {
-    title: 'AgroPi Marketplace',
-    description: 'AgroPi — Pi Network üzerinden yapay zeka destekli tarımsal yönetim',
+    title: 'AgroPi Smart Farming',
+    description: 'AgroPi — AI-powered smart farming advisor and field management system',
     url: 'https://agropicbecaed4844.pinet.com',
-    siteName: 'AgroPi Marketplace',
+    siteName: 'AgroPi Smart Farming',
     images: [
       {
         url: '/og-image.png',
@@ -31,8 +31,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'AgroPi Marketplace',
-    description: 'AgroPi — Pi Network üzerinden yapay zeka destekli tarımsal yönetim',
+    title: 'AgroPi Smart Farming',
+    description: 'AgroPi — AI-powered smart farming advisor and field management system',
     images: ['/og-image.png'],
   },
   referrer: 'no-referrer-when-downgrade',

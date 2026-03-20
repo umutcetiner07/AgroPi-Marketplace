@@ -107,8 +107,8 @@ export default function AgroPiChatbot() {
                 <span className="text-green-600 font-bold text-sm">🌱</span>
               </div>
               <div>
-                <h3 className="font-semibold">AgroPi Asistan</h3>
-                <p className="text-xs opacity-90">Akıllı Tarım Danışmanı</p>
+                <h3 className="font-semibold">AgroPi AI Advisor</h3>
+                <p className="text-xs opacity-90">Smart Farming Assistant</p>
               </div>
             </div>
             <button
