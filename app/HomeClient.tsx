@@ -27,9 +27,19 @@ export default function HomeClient() {
                 await (window as any).Pi.init({
                     version: "2.0",
                     sandbox: PI_CONFIG.sandbox,
-                    appId: PI_CONFIG.appId
+                    appId: PI_CONFIG.appId,
+                    network: 'mainnet' // Pi Browser için mainnet
                 })
-                console.log('Pi SDK başarıyla başlatıldı')
+                console.log('Pi SDK başarıyla başlatıldı - Pi Browser modu')
+                
+                // Pi Browser kontrolü
+                if (window.location.hostname.includes('pinet.com')) {
+                    console.log('Pi Browser detected - enabling Pi Network features')
+                    setStatusMessage('Pi Browser modu aktif')
+                }
+            } else {
+                console.log('Pi SDK bulunamadı - normal browser modu')
+                setStatusMessage('Pi SDK yükleniyor...')
             }
         } catch (error) {
             console.error('Pi SDK başlatma hatası:', error)

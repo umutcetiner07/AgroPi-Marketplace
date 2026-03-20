@@ -2,9 +2,11 @@
 const nextConfig = {
   reactStrictMode: true,
   images: {
-    domains: ['localhost'],
+    domains: ['localhost', 'agropicbecaed4844.pinet.com'],
   },
   output: 'standalone',
+  basePath: '',
+  assetPrefix: '',
   env: {
     PI_APP_ID: '68a6fed62cb50254172b6593',
     PI_API_KEY: '5inedspkbqoa4bz4tljrimau6rl7yvwnwkeinebxrgy2jwtiryyuh3g15jxyqjqj',
@@ -42,7 +44,7 @@ const nextConfig = {
           },
           {
             key: 'Content-Security-Policy',
-            value: "default-src 'self'; script-src 'self' https://sdk.minepi.com 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; connect-src 'self' https://api.minepi.com;",
+            value: "default-src 'self'; script-src 'self' https://sdk.minepi.com https://agropicbecaed4844.pinet.com 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; connect-src 'self' https://api.minepi.com https://agropicbecaed4844.pinet.com;",
           },
         ],
       },

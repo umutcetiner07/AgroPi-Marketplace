@@ -10,21 +10,19 @@ export const metadata: Metadata = {
     template: '%s | AgroPi Marketplace'
   },
   description: 'AgroPi — Pi Network üzerinden yapay zeka destekli tarımsal yönetim',
-  viewport: 'width=device-width, initial-scale=1, viewport-fit=cover',
-  themeColor: '#6b3cff',
-  metadataBase: new URL('https://agropi-marketplace.vercel.app'),
+  metadataBase: new URL('https://agropicbecaed4844.pinet.com'),
   icons: {
-    icon: '/favicon.ico',
-    apple: '/apple-touch-icon.png',
+    icon: 'https://agropicbecaed4844.pinet.com/favicon.ico',
+    apple: 'https://agropicbecaed4844.pinet.com/apple-touch-icon.png',
   },
   openGraph: {
     title: 'AgroPi Marketplace',
     description: 'AgroPi — Pi Network üzerinden yapay zeka destekli tarımsal yönetim',
-    url: 'https://agropi-marketplace.vercel.app',
+    url: 'https://agropicbecaed4844.pinet.com',
     siteName: 'AgroPi Marketplace',
     images: [
       {
-        url: '/og-image.png',
+        url: 'https://agropicbecaed4844.pinet.com/og-image.png',
         width: 1200,
         height: 630,
       }
@@ -35,7 +33,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'AgroPi Marketplace',
     description: 'AgroPi — Pi Network üzerinden yapay zeka destekli tarımsal yönetim',
-    images: ['/og-image.png'],
+    images: ['https://agropicbecaed4844.pinet.com/og-image.png'],
   },
   referrer: 'no-referrer-when-downgrade',
 }
