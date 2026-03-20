@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { PiConfig, PiAuthResult } from '@/types/pi'
+import AgroPiChatbot from '@/components/AgroPiChatbot'
 
 // Pi Network Configuration
 const PI_CONFIG: PiConfig = {
@@ -193,6 +194,9 @@ export default function HomeClient() {
                     <p className="text-blue-800 text-sm">{statusMessage}</p>
                 </div>
             )}
+            
+            {/* AgroPi Chatbot */}
+            <AgroPiChatbot />
         </div>
     )
 }
