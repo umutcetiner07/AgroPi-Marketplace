@@ -60,6 +60,16 @@ export default function HomeClient() {
             }
 
             console.log('Attempting Pi Network connection...')
+            console.log('Current user:', piUser)
+            
+            // Önce mevcut session'ı temizle
+            if (piUser) {
+                console.log('Clearing existing session...')
+                setPiUser(null)
+                setIsConnected(false)
+                setStatusMessage('Önceki session temizlendi...')
+                await new Promise(resolve => setTimeout(resolve, 1000))
+            }
             
             // Sadece username ve payments - geçerli scope'lar
             const authResult = await (window as any).Pi.authenticate(['username', 'payments'], {
