@@ -86,6 +86,54 @@ export default function HomeClient() {
         setStatusMessage('Pi Network bağlantısı kesildi.')
     }
 
+    // Test Payment Function
+    async function testPayment() {
+        setIsLoading(true)
+        try {
+            if (!(window as any).Pi) {
+                throw new Error('Pi SDK bulunamadı!')
+            }
+
+            const paymentResult = await (window as any).Pi.createPayment({
+                amount: 0.1,
+                memo: 'Test payment for AgroPi Smart Farming',
+                metadata: {
+                    productId: 'test-payment-001',
+                    userId: piUser?.uid || 'anonymous'
+                }
+            }, {
+                onReadyForServerApproval: (paymentId: string) => {
+                    console.log('Payment ready for approval:', paymentId)
+                    setStatusMessage('Ödeme onayı bekleniyor...')
+                },
+                onReadyForServerCompletion: (paymentId: string, txid: string) => {
+                    console.log('Payment ready for completion:', paymentId, txid)
+                    setStatusMessage('Ödeme tamamlanıyor...')
+                },
+                onCancel: (paymentId: string) => {
+                    console.log('Payment cancelled:', paymentId)
+                    setStatusMessage('Ödeme iptal edildi.')
+                },
+                onError: (error: any, payment?: any) => {
+                    console.error('Payment error:', error, payment)
+                    setStatusMessage('Ödeme hatası: ' + error.message)
+                },
+                onCompletion: (paymentId: string, txid: string) => {
+                    console.log('Payment completed:', paymentId, txid)
+                    setStatusMessage('Ödeme başarıyla tamamlandı! ✅')
+                }
+            })
+
+            console.log('Payment initiated:', paymentResult)
+
+        } catch (error) {
+            console.error('Payment error:', error)
+            setStatusMessage('Ödeme hatası: ' + error.message)
+        } finally {
+            setIsLoading(false)
+        }
+    }
+
     return (
         <div className="min-h-screen bg-gradient-to-br from-green-50 to-green-100">
             {/* Header */}
@@ -144,6 +192,23 @@ export default function HomeClient() {
                         <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 max-w-md mx-auto">
                             <p className="text-yellow-800 text-sm">
                                 You can use marketplace features by connecting with Pi Network.
+                            </p>
+                        </div>
+                    )}
+
+                    {/* Test Payment Section */}
+                    {isConnected && (
+                        <div className="mt-8 bg-white rounded-lg shadow-md p-6 max-w-md mx-auto">
+                            <h3 className="text-lg font-semibold text-gray-800 mb-4">Test Pi Payment</h3>
+                            <button
+                                onClick={testPayment}
+                                disabled={isLoading}
+                                className="w-full px-4 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 transition-colors font-medium"
+                            >
+                                {isLoading ? 'Processing...' : 'Test Pay 0.1 Pi'}
+                            </button>
+                            <p className="text-sm text-gray-600 mt-2">
+                                Test the Pi Network payment integration with a small amount.
                             </p>
                         </div>
                     )}
