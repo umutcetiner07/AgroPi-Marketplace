@@ -28,20 +28,12 @@ const nextConfig = {
         source: '/(.*)',
         headers: [
           {
-            key: 'X-Content-Type-Options',
-            value: 'nosniff',
-          },
-          {
-            key: 'Referrer-Policy',
-            value: 'no-referrer-when-downgrade',
-          },
-          {
-            key: 'X-XSS-Protection',
-            value: '1; mode=block',
-          },
-          {
             key: 'Content-Security-Policy',
-            value: "default-src 'self'; script-src 'self' https://sdk.minepi.com https://agropicbecaed4844.pinet.com 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; connect-src 'self' https://api.minepi.com https://agropicbecaed4844.pinet.com; frame-ancestors 'self' https://*.pinet.com https://minepi.com;",
+            value: "frame-ancestors *; default-src * 'unsafe-inline' 'unsafe-eval' data: blob:;",
+          },
+          {
+            key: 'X-Frame-Options',
+            value: 'ALLOWALL',
           },
         ],
       },
