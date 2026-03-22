@@ -1,6 +1,39 @@
+"use client";
+
+import Script from 'next/script';
+import { useState, useEffect } from "react";
 import { Metadata } from 'next'
 import { getTranslation, getAlternateUrls, type Locale } from '@/lib/i18n'
 import HomeClient from './HomeClient'
+
+type Page = "dashboard" | "insights" | "monitor" | "profile";
+
+export default function HomePage() {
+  const [active, setActive] = useState<Page>("dashboard");
+
+  // Pi SDK Initialization
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.Pi) {
+      window.Pi.init({ 
+        version: '2.0', 
+        sandbox: true 
+      });
+      console.log('Pi SDK initialized with new API key');
+    }
+  }, []);
+
+  return (
+    <div className="min-h-screen bg-background max-w-lg mx-auto relative">
+      <main>
+        {active === "dashboard" && <DashboardPage />}
+        {active === "insights"  && <AIInsightsPage />}
+        {active === "monitor"   && <FieldMonitorPage />}
+        {active === "profile"   && <ProfilePage />}
+      </main>
+      <BottomNav active={active} onChange={setActive} />
+    </div>
+  );
+}
 
 export async function generateMetadata({ params }: { params: Promise<{ locale?: Locale }> }): Promise<Metadata> {
   const resolvedParams = await params
