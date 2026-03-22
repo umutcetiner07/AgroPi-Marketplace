@@ -11,8 +11,8 @@ export interface LocaleContent {
 
 export const translations: Record<Locale, Record<string, string>> = {
   tr: {
-    'site.title': 'AgroPi Marketplace',
-    'site.description': 'Pi Network üzerinden yapay zeka destekli tarımsal yönetim ve marketplace platformu. Topraksız tarım çözümleri.',
+    'site.title': 'AgroPi Smart Farming',
+    'site.description': 'Pi Network üzerinden yapay zeka destekli akıllı tarım yönetim platformu. Topraksız tarım çözümleri.',
     'nav.home': 'Ana Sayfa',
     'nav.products': 'Ürünler',
     'nav.categories': 'Kategoriler',
@@ -27,8 +27,8 @@ export const translations: Record<Locale, Record<string, string>> = {
     'footer.rights': 'Tüm hakları saklıdır.',
   },
   en: {
-    'site.title': 'AgroPi Marketplace',
-    'site.description': 'AI-powered agricultural management and marketplace platform on Pi Network. Soilless farming solutions.',
+    'site.title': 'AgroPi Smart Farming',
+    'site.description': 'AI-powered smart farming management platform on Pi Network. Soilless farming solutions.',
     'nav.home': 'Home',
     'nav.products': 'Products',
     'nav.categories': 'Categories',
@@ -56,7 +56,7 @@ export function getLocalizedUrl(path: string, locale: Locale): string {
 }
 
 export function getAlternateUrls(path: string): Record<Locale, string> {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://agropi-marketplace.vercel.app'
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://agropi-smart-farming.vercel.app'
   
   return {
     tr: `${baseUrl}${path}`,
