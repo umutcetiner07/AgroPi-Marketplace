@@ -1,11 +1,27 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export function DashboardPage() {
   const [piUser, setPiUser] = useState<any>(null);
   const [statusMessage, setStatusMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [piSdkReady, setPiSdkReady] = useState(false);
+
+  // Check Pi SDK readiness
+  useEffect(() => {
+    const checkPiSdk = () => {
+      if (typeof window !== 'undefined' && window.Pi) {
+        console.log('Pi SDK detected:', window.Pi);
+        setPiSdkReady(true);
+      } else {
+        console.log('Pi SDK not found, retrying...');
+        setTimeout(checkPiSdk, 1000);
+      }
+    };
+    
+    checkPiSdk();
+  }, []);
 
   // Test Payment Function
   async function testPayment() {
@@ -16,13 +32,16 @@ export function DashboardPage() {
       }
 
       console.log('Starting payment with new API key...');
+      console.log('Current user:', piUser);
+      console.log('Wallet available:', window.Pi.getWallet?.());
 
       const paymentResult = await window.Pi.createPayment({
         amount: 0.1,
         memo: 'Test payment for AgroPi Smart Farming',
         metadata: {
           productId: 'test-payment-001',
-          userId: piUser?.uid || 'anonymous'
+          userId: piUser?.uid || 'anonymous',
+          walletAddress: 'GCXUX6I4AOOGDNS4HYDW4YH2KQD7X3M7TZUOG54EKXIWBI7GZNZV3RN5'
         }
       }, {
         onReadyForServerApproval: async (paymentId: string) => {
@@ -117,6 +136,16 @@ export function DashboardPage() {
         throw new Error('Pi SDK bulunamadı!');
       }
 
+      console.log('Initializing Pi SDK with sandbox: true...');
+      
+      // Ensure Pi.init completes before auth
+      await window.Pi.init({ 
+        version: '2.0', 
+        sandbox: true 
+      });
+      
+      console.log('Pi SDK initialized successfully');
+      
       const authResult = await window.Pi.authenticate(['username', 'payments'], {
         network: 'testnet'
       });
