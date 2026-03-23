@@ -6,6 +6,7 @@ type PiSandboxPaymentProps = {
   onPay: () => void;
   busy?: boolean;
   disabled?: boolean;
+  status?: string | null;
 };
 
 function PiMark({ className }: { className?: string }) {
@@ -32,6 +33,7 @@ export function PiSandboxPayment({
   onPay,
   busy,
   disabled,
+  status,
 }: PiSandboxPaymentProps) {
   return (
     <section
@@ -83,6 +85,11 @@ export function PiSandboxPayment({
               <p className="text-sm text-neutral-500">
                 Tap the button to start a test payment
               </p>
+              {status && (
+                <p className="mt-2 text-xs text-neutral-600 bg-neutral-50 rounded px-2 py-1">
+                  {status}
+                </p>
+              )}
             </div>
           </div>
         </div>

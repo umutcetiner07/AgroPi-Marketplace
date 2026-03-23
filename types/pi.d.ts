@@ -1,4 +1,4 @@
-export interface PiWindow extends Window {
+export interface PiWindow {
   Pi: {
     init: (config: PiConfig) => Promise<void>
     authenticate: (
@@ -68,5 +68,7 @@ export interface IncompletePaymentDTO {
 }
 
 declare global {
-  interface Window extends PiWindow {}
+  interface Window {
+    Pi: PiWindow['Pi']
+  }
 }

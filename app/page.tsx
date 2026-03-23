@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState, useRef } from "react";
 import Script from "next/script";
 import {
   Bell,
@@ -9,10 +9,13 @@ import {
   Droplets,
   FlaskConical,
   Leaf,
+  Minus,
   RefreshCw,
   Shield,
   Sun,
   Thermometer,
+  TrendingDown,
+  TrendingUp,
   Waves,
   Wind,
 } from "lucide-react";
@@ -30,32 +33,39 @@ export default function Page() {
   const [paymentBusy, setPaymentBusy] = useState(false);
   const [paymentStatus, setPaymentStatus] = useState<string | null>(null);
   const [now, setNow] = useState(() => new Date());
+  const [sdkReady, setSdkReady] = useState(false);
   const [paymentsScopeStatus, setPaymentsScopeStatus] = useState<
     "unknown" | "granted" | "denied"
   >("unknown");
+  
+  const piInitialized = useRef(false);
 
   useEffect(() => {
     const t = setInterval(() => setNow(new Date()), 30_000);
     return () => clearInterval(t);
   }, []);
 
-  useEffect(() => {
-    const initPi = async () => {
-      if (typeof window === "undefined" || !window.Pi) return;
-      if (!PI_APP_ID) {
-        console.warn(
-          "NEXT_PUBLIC_PI_APP_ID eksik; Pi.init atlandı. .env.local kontrol edin."
-        );
-        return;
-      }
+  const handleScriptLoad = useCallback(async () => {
+    if (typeof window === "undefined" || !window.Pi || piInitialized.current) return;
+    if (!PI_APP_ID) {
+      console.warn(
+        "NEXT_PUBLIC_PI_APP_ID eksik; Pi.init atlandı. .env.local kontrol edin."
+      );
+      return;
+    }
+    
+    try {
       await window.Pi.init({
         version: "2.0",
         sandbox: PI_SANDBOX,
         appId: PI_APP_ID,
       });
-    };
-    initPi();
-  }, []);
+      piInitialized.current = true;
+      setSdkReady(true);
+    } catch (error) {
+      console.error("Pi SDK initialization failed:", error);
+    }
+  }, [PI_APP_ID, PI_SANDBOX]);
 
   const timeLabel = useMemo(
     () =>
@@ -109,7 +119,7 @@ export default function Page() {
     if (!PI_APP_ID) throw new Error("PI_APP_ID eksik.");
 
     try {
-      // KRITIK DÜZELTME: ["payments", "username"] izni burada zorunlu.
+      // KRITIK DÜZELTME: Pi.authenticate(['payments', 'username'], onIncompletePaymentFound) formatında
       const authResult = await window.Pi.authenticate(
         ["payments", "username"],
         resumeIncompletePayment
@@ -235,7 +245,11 @@ export default function Page() {
 
   return (
     <div className="min-h-screen bg-agropi-mist pb-36 text-neutral-900">
-      <Script src="https://sdk.minepi.com/pi-sdk.js" strategy="afterInteractive" />
+      <Script 
+        src="https://sdk.minepi.com/pi-sdk.js" 
+        strategy="afterInteractive" 
+        onLoad={handleScriptLoad}
+      />
 
       <header className="relative overflow-hidden bg-agropi-forest-deep px-4 pb-10 pt-6 text-white">
         <div
@@ -298,4 +312,92 @@ export default function Page() {
             <HealthScoreRing score={92} />
             <div className="min-w-0 flex-1">
               <p className="text-[10px] font-semibold uppercase tracking-widest text-emerald-200/90">Crop Health Score</p>
-              <p className="mt-
+              <p className="mt-2 text-3xl font-bold">92%</p>
+              <p className="text-sm text-emerald-200/80">Excellent condition</p>
+            </div>
+          </div>
+        </section>
+
+        <section className="rounded-3xl bg-white p-4 shadow-md ring-1 ring-black/5">
+          <div className="mb-3 flex items-center justify-between">
+            <h2 className="text-sm font-semibold text-neutral-700">Field Sensors</h2>
+            <button className="text-xs text-agropi-forest hover:text-agropi-forest-deep">
+              <RefreshCw className="h-3 w-3" />
+            </button>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="rounded-3xl border border-neutral-100/80 bg-white p-4 shadow-sm">
+              <div className="mb-3 flex items-start justify-between gap-2">
+                <Droplets className="h-6 w-6 text-agropi-forest" strokeWidth={1.75} />
+                <span className="rounded-full bg-agropi-optimal px-2.5 py-0.5 text-[11px] font-semibold text-agropi-optimal-fg">
+                  Optimal
+                </span>
+              </div>
+              <div className="flex items-end justify-between gap-1">
+                <div className="text-2xl font-bold tabular-nums text-agropi-forest">72%</div>
+              </div>
+              <div className="mt-3 flex items-center gap-1.5 text-xs font-medium text-neutral-500">
+                <TrendingUp className="h-3.5 w-3.5 text-emerald-600" />
+                <span>Rising</span>
+              </div>
+            </div>
+            <div className="rounded-3xl border border-neutral-100/80 bg-white p-4 shadow-sm">
+              <div className="mb-3 flex items-start justify-between gap-2">
+                <Thermometer className="h-6 w-6 text-agropi-forest" strokeWidth={1.75} />
+                <span className="rounded-full bg-agropi-optimal px-2.5 py-0.5 text-[11px] font-semibold text-agropi-optimal-fg">
+                  Optimal
+                </span>
+              </div>
+              <div className="flex items-end justify-between gap-1">
+                <div className="text-2xl font-bold tabular-nums text-agropi-forest">22°C</div>
+              </div>
+              <div className="mt-3 flex items-center gap-1.5 text-xs font-medium text-neutral-500">
+                <Minus className="h-3.5 w-3.5 text-emerald-600" />
+                <span>Stable</span>
+              </div>
+            </div>
+            <div className="rounded-3xl border border-neutral-100/80 bg-white p-4 shadow-sm">
+              <div className="mb-3 flex items-start justify-between gap-2">
+                <FlaskConical className="h-6 w-6 text-agropi-forest" strokeWidth={1.75} />
+                <span className="rounded-full bg-agropi-warning px-2.5 py-0.5 text-[11px] font-semibold text-agropi-warning-fg">
+                  Warning
+                </span>
+              </div>
+              <div className="flex items-end justify-between gap-1">
+                <div className="text-2xl font-bold tabular-nums text-agropi-forest">6.8</div>
+              </div>
+              <div className="mt-3 flex items-center gap-1.5 text-xs font-medium text-neutral-500">
+                <TrendingDown className="h-3.5 w-3.5 text-emerald-600" />
+                <span>Falling</span>
+              </div>
+            </div>
+            <div className="rounded-3xl border border-neutral-100/80 bg-white p-4 shadow-sm">
+              <div className="mb-3 flex items-start justify-between gap-2">
+                <Waves className="h-6 w-6 text-agropi-forest" strokeWidth={1.75} />
+                <span className="rounded-full bg-agropi-optimal px-2.5 py-0.5 text-[11px] font-semibold text-agropi-optimal-fg">
+                  Optimal
+                </span>
+              </div>
+              <div className="flex items-end justify-between gap-1">
+                <div className="text-2xl font-bold tabular-nums text-agropi-forest">High</div>
+              </div>
+              <div className="mt-3 flex items-center gap-1.5 text-xs font-medium text-neutral-500">
+                <TrendingUp className="h-3.5 w-3.5 text-emerald-600" />
+                <span>Rising</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <PiSandboxPayment
+          busy={paymentBusy}
+          status={paymentStatus}
+          onPay={startPayment}
+          disabled={!sdkReady}
+        />
+      </main>
+
+      <BottomNav />
+    </div>
+  );
+}
