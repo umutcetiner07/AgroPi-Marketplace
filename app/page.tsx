@@ -145,6 +145,8 @@ export default function Page() {
   }, [PI_APP_ID, resumeIncompletePayment]);
 
   const startPayment = useCallback(async () => {
+    console.log('startPayment called', { sdkReady, paymentBusy, hasWindowPi: !!window.Pi });
+    
     if (typeof window === "undefined" || !window.Pi?.createPayment) {
       alert("Pi SDK yüklenemedi. Pi Browser içinde deneyin.");
       return;
@@ -393,7 +395,7 @@ export default function Page() {
           busy={paymentBusy}
           status={paymentStatus}
           onPay={startPayment}
-          disabled={!sdkReady}
+          disabled={false} // Geçici olarak her zaman enabled
         />
       </main>
 
